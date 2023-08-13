@@ -11,15 +11,16 @@ contract TokenizedBallot {
         uint voteCount;
     }
     Proposal[] public proposals;
-    address public tokenContract;
+    IMyToken public tokenContract;
     uint256 public targetBlockNumber;
+    mapping(address => uint256) public votingPowerSpent;
 
     constructor(
         bytes32[] memory proposalNames,
         address _tokenContract,
         uint _targetTimePoint
     ) {
-        tokenContract = _tokenContract;
+        tokenContract = IMyToken(_tokenContract);
         targetBlockNumber = _targetTimePoint;
 
         for (uint i = 0; i < proposalNames.length; i++) {
@@ -28,8 +29,16 @@ contract TokenizedBallot {
     }
 
     function vote(uint proposal, uint amount) external {
-        // require the voting power to be highet than amount
-        // update the proposal vote count
+        require(votingPower(msg.sender) >= amount);
+
+        votingPowerSpent[msg.sender] += amount;
+        proposals[proposal].voteCount += amount;
+    }
+
+    function votingPower(address account) public view returns (uint256) {
+        return
+            tokenContract.getPastVotes(account, targetBlockNumber) -
+            votingPowerSpent[account];
     }
 
     function winningProposal() public view returns (uint winningProposal_) {

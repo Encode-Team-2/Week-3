@@ -3,23 +3,29 @@ import { TokenizedBallot__factory } from "../typechain-types";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+let provider: ethers.JsonRpcProvider;
+
 function setupProvider() {
-  const provider = new ethers.JsonRpcProvider(
-    process.env.SEPOLIA_RPC_URL ?? ""
-  );
+  provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL ?? "");
   return provider;
 }
 
 async function main() {
   // Gather inputs
+  let getProvider = setupProvider();
   const erc20Address = process.env.TOKEN_ADDRESS ?? "";
-  const targetBlockNum = process.argv[2];
+  const targetBlockNum = (await getProvider.getBlockNumber()) + 10;
+  console.log(`\nTarget block number: ${targetBlockNum}.`);
   const proposals = process.argv.slice(3);
+
   console.log(`\nDeploying Ballot contract at block number ${targetBlockNum}.`);
-  console.log("Proposals: ");
+
   proposals.forEach((element, index) => {
     console.log(`\tProposal No. ${index + 1}: ${element}`);
   });
+
+  const encodedProposals = proposals.map(ethers.encodeBytes32String);
+  console.log("Encoded proposals: ", encodedProposals);
 
   // Deployment
   const provider = setupProvider();
@@ -32,7 +38,7 @@ async function main() {
   }
   const tokenizedBallotFactory = new TokenizedBallot__factory(wallet);
   const tokenizedBallotContract = await tokenizedBallotFactory.deploy(
-    proposals.map(ethers.encodeBytes32String),
+    encodedProposals,
     erc20Address,
     targetBlockNum
   );

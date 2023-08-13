@@ -88,7 +88,7 @@ async function main() {
     } had ${pastVotes3.toString()} units of voting power at previous block\n`
   );
 }
-main().catch((error) => {
+main().catch(error => {
   console.error();
   process.exitCode = 1;
 });

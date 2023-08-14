@@ -24,9 +24,10 @@ async function main() {
   const grantTx = await tokenContract.grantMinterRole(futureMinerAddress);
   await grantTx.wait();
   // TODO print transaction hash
+  console.log(`Granted minter role to account ${futureMinerAddress}.\n`);
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error(error);
   process.exitCode = 1;
 });

@@ -41,7 +41,9 @@ async function main() {
     signer
   );
 
-  await tokenizedBallotContract.vote(proposalId, votingAmount);
+  await tokenizedBallotContract.vote(proposalId, votingAmount, {
+    gasLimit: 1000000,
+  });
 
   const votedProposal = await tokenizedBallotContract.proposals(proposalId);
   console.log(

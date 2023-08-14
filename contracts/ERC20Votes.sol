@@ -14,6 +14,10 @@ contract MyToken is ERC20, AccessControl, ERC20Permit, ERC20Votes {
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
+    function grantMinterRole(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(MINTER_ROLE, to);
+    }
+
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
         _mint(to, amount);
     }

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { MyToken__factory } from "../typechain-types";
+import { MyToken, MyToken__factory } from "../typechain-types";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -18,7 +18,9 @@ async function main() {
   const signer = wallet.connect(provider);
 
   const tokenFactory = new MyToken__factory(signer);
-  const tokenContract = tokenFactory.attach(process.env.TOKEN_ADDRESS ?? "");
+  const tokenContract = tokenFactory.attach(
+    process.env.TOKEN_ADDRESS ?? ""
+  ) as MyToken;
 
   const votesAfter = await tokenContract.getVotes(signer.address);
   console.log(
